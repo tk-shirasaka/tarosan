@@ -1,0 +1,48 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #eee;
+  font-family: 'Roboto', sans-serif;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+}
+
+button, i {
+  font-weight: bold;
+  user-select: none;
+  margin: 4px;
+  cursor: pointer;
+  border: 1px solid;
+  border-radius: 4px;
+  box-shadow: 2px 2px 8px -4px #000;
+}
+
+.float {
+  border: 1px solid;
+  border-radius: 4px;
+  box-shadow: 2px 2px 8px -4px #000;
+  background: #fff;
+}
+
+.color-green {
+  color: #eee;
+  background: #50cc86;
+  border-color: #7ec690;
+}
+
+.color-red {
+  color: #eee;
+  background: #d7464d;
+  border-color: #dd516b;
+}
+canvas {
+  margin: 8px;
+  border: 1px solid;
+  background: #fff;
+}
