@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "tiff": "^4.0.0"
   }
 }

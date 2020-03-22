@@ -1,8 +1,11 @@
 import React, { ChangeEvent } from "react";
+import { decode } from "tiff";
 
 interface Props {
   size: { width: number; height: number; };
-  onChange: (bitmap: number[][]) => void;
+  bitmap: number[][];
+  title: string;
+  onChange: (width: number, height: number, bitmap: number[][]) => void;
 }
 
 interface States {
@@ -10,6 +13,7 @@ interface States {
 
 const positionR: "relative" = "relative";
 const positionA: "absolute" = "absolute";
+const textAlign: "center" = "center";
 const styles = {
   scope: {
     position: positionR,
@@ -18,9 +22,23 @@ const styles = {
     position: positionA,
     top: 12,
     right: 12,
+    zIndex: 1,
   },
   input: {
     display: "none",
+  },
+  canvas: {
+    width: 200,
+    height: 200,
+  },
+  blank: {
+    position: positionA,
+    width: 200,
+    height: 200,
+    margin: 8,
+    lineHeight: "200px",
+    textAlign,
+    color: "#9f9ea8",
   },
 }
 
@@ -33,21 +51,29 @@ export class ImageComponent extends React.Component<Props, States> {
     ctx && (this.ctx = ctx);
   }
 
-  private getBitmap(array?: Uint8ClampedArray) {
-    const result: number[][] = [];
-    const width = this.props.size.width * 4;
-    const height = this.props.size.height
+  componentDidUpdate() {
+    if (!this.ctx) return;
+    const ctx = this.ctx;
 
-    if (!array) return result;
+    this.props.bitmap.forEach((line, y) => line.forEach((bit, x) => {
+      ctx.fillStyle = `rgb(${bit}, ${bit}, ${bit})`;
+      ctx.fillRect(x, y, 1, 1);
+    }));
+  }
+
+  private getBitmap(width: number, height: number, array: Uint8Array | Uint16Array | Float32Array) {
+    const result: number[][] = [];
+    const raito = array instanceof Uint16Array ? 256 : 1;
+    const scale = array.length / width / height;
 
     for (let y = 0; y < height; y++) {
       const line: number[] = [];
       for (let x = 0; x < width; x++) {
-        const i = y * width + x * 4;
-        const r = array[i + 0];
-        const g = array[i + 1];
-        const b = array[i + 2];
-        line.push(Math.round((r + g + b) / 3));
+        let color = 0, i = 0;
+        for (; i < Math.min(3, scale); i++) {
+          color += array[i + (y * width + x) * scale] / raito;
+        }
+        line.push(Math.round(color / i));
       }
       result.push(line);
     }
@@ -56,24 +82,23 @@ export class ImageComponent extends React.Component<Props, States> {
   }
 
   private onChange(e: ChangeEvent) {
-    const { width, height } = this.props.size
     const files = (e.target as HTMLInputElement).files
 
     e.preventDefault();
     e.stopPropagation();
-    if (!this.ctx || !files || ["image/jpeg", "image/png"].indexOf(files[0].type) < 0) return;
+    if (!files) return;
 
     const reader = new FileReader;
-    const image = new Image;
 
     reader.onload = e => {
-      image.onload = () => {
-        this.ctx?.drawImage(image, 0, 0, width, height);
-        this.props.onChange(this.getBitmap(this.ctx?.getImageData(0, 0, width, height).data));
-      };
-      image.src = e.target?.result as string;
+      if (!e.target) return;
+      const image = decode(e.target.result as ArrayBuffer).pop();
+
+      if (!image) return;
+      const { width, height } = image;
+      this.props.onChange(width, height, this.getBitmap(width, height, image.data));
     };
-    reader.readAsDataURL(files[0]);
+    reader.readAsArrayBuffer(files[0]);
   }
 
   render() {
@@ -81,9 +106,10 @@ export class ImageComponent extends React.Component<Props, States> {
       <div style={styles.scope}>
         <label style={styles.label}>
           <i className="material-icons color-green">folder</i>
-          <input type="file" accept="image/*" style={styles.input} onChange={this.onChange.bind(this)} />
+          <input type="file" accept="image/tiff" style={styles.input} onChange={this.onChange.bind(this)} />
         </label>
-        <canvas {...this.props.size} ref="canvas" />
+        <div style={styles.blank}>{ this.props.title }</div>
+        <canvas {...this.props.size} style={styles.canvas} ref="canvas" />
       </div>
     );
   }
