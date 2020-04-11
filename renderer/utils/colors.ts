@@ -5,12 +5,10 @@ export interface IColor {
 export class Colors {
   private colors: IColor[] = [
     { r: 0,   g: 0,   b: 255, from: 0   },
-    { r: 0,   g: 255, b: 255, from: 10  },
     { r: 0,   g: 255, b: 0,   from: 20  },
     { r: 255, g: 255, b: 0,   from: 30  },
     { r: 255, g: 0,   b: 0,   from: 40  },
     { r: 255, g: 0,   b: 255, from: 50  },
-    { r: 0,   g: 0,   b: 0,   from: 100 },
   ];
 
   constructor() {
@@ -21,7 +19,7 @@ export class Colors {
     }
   }
 
-  getColors() {
+  get() {
     return this.colors;
   }
 

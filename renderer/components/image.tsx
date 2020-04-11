@@ -73,7 +73,7 @@ export class ImageComponent extends React.Component<Props, States> {
         for (; i < Math.min(3, scale); i++) {
           color += array[i + (y * width + x) * scale] / raito;
         }
-        line.push(Math.round(color / i));
+        line.push(color / i);
       }
       result.push(line);
     }

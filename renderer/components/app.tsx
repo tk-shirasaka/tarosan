@@ -1,5 +1,6 @@
 import React from "react";
 
+import { IRange, Range } from "../utils/range";
 import { IColor, Colors } from "../utils/colors";
 
 import { SettingComponent } from "./setting";
@@ -13,10 +14,12 @@ interface States {
   size: { width: number; height: number; }
   source: number[][];
   target: number[][];
+  range: IRange;
   colors: IColor[];
 }
 
 export class AppComponent extends React.Component<Props, States> {
+  private range = new Range;
   private colors = new Colors;
 
   constructor(props: Props) {
@@ -26,14 +29,20 @@ export class AppComponent extends React.Component<Props, States> {
       size: { width: 0, height: 0 },
       source: [],
       target: [],
-      colors: this.colors.getColors()
+      range: this.range.get(),
+      colors: this.colors.get(),
     };
   }
 
-  onColorChange(colors: IColor[]) {
-    colors.sort((a, b) => Math.max(-1, Math.min(1, a.from - b.from)));
-    this.colors.save(colors);
-    this.setState({ colors: this.colors.getColors() });
+  onSubmit(range: IRange, colors: IColor[]) {
+    const scale = (range.max - range.min) / colors.length;
+
+    this.range.save(range);
+    this.colors.save(colors.map((color, i) => {
+      color.from = range.min + scale * i;
+      return color;
+    }));
+    this.setState({ range, colors });
   }
 
   onImageChange(width: number, height: number, source: number[][], target: number[][]) {
@@ -57,7 +66,7 @@ export class AppComponent extends React.Component<Props, States> {
   render() {
     return (
       <>
-        <SettingComponent onSubmit={this.onColorChange.bind(this)} />
+        <SettingComponent onSubmit={this.onSubmit.bind(this)} />
         <div>
           <ImageComponent size={this.state.size} bitmap={this.state.source} title="分子画像" onChange={this.onSourceChange.bind(this)} />
           <ImageComponent size={this.state.size} bitmap={this.state.target} title="分母画像" onChange={this.onTargetChange.bind(this)} />
