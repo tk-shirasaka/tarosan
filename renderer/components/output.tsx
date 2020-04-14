@@ -46,20 +46,20 @@ export class OutputComponent extends React.Component<Props, States> {
     this.setState({ selected: { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY } });
   }
 
-  private calcColor(base: number, offset: number) {
-    return Math.min(255, Math.max(0, base + offset));
+  private calcColor(limit: number, offset: number) {
+    return Math.min(limit, Math.max(0, offset));
   }
 
   private drawOutput(ctx: CanvasRenderingContext2D) {
     this.props.source.forEach((line, y) => line.forEach((source, x) => {
       const target = this.props.target[y][x];
-      const bit = target ? (source / target) * 100 : 0;
+      const bit = target ? source / target : 0;
       const color = this.props.range.min <= bit && bit <= this.props.range.max && this.props.colors.filter(c => c.from <= bit).pop();
 
       if (this.state.isgray) {
-        const r = this.calcColor(0, bit);
-        const g = this.calcColor(0, bit);
-        const b = this.calcColor(0, bit);
+        const r = this.calcColor(255, bit);
+        const g = this.calcColor(255, bit);
+        const b = this.calcColor(255, bit);
         ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
       } else if (color) {
         const r = this.calcColor(color.r, target);

@@ -91,19 +91,19 @@ export class SettingComponent extends React.Component<Props, States> {
   }
 
   private renderRangePanel() {
-    return <div style={styles.panel} onClick={() => this.onSelect(-1)}>{ this.state.range.min }% ～ { this.state.range.max }%</div>;
+    return <div style={styles.panel} onClick={() => this.onSelect(-1)}>{ this.state.range.min } ～ { this.state.range.max }</div>;
   }
 
   private renderRangeForm() {
     return (
       <form onSubmit={this.onSubmit.bind(this)}>
         <label style={styles.form}>
-          <div style={styles.label}>Min({ this.state.range.min }%)</div>
-          <input style={styles.input} type="range" min={0} max={this.state.range.max} value={this.state.range.min} onChange={e => this.onChangeRange("min", e.target.value)} />
+          <div style={styles.label}>Min</div>
+          <input style={styles.input} type="number" value={this.state.range.min} onChange={e => this.onChangeRange("min", e.target.value)} />
         </label>
         <label style={styles.form}>
-          <div style={styles.label}>Max({ this.state.range.max }%)</div>
-          <input style={styles.input} type="range" min={this.state.range.min} max={100} value={this.state.range.max} onChange={e => this.onChangeRange("max", e.target.value)} />
+          <div style={styles.label}>Max</div>
+          <input style={styles.input} type="number" value={this.state.range.max} onChange={e => this.onChangeRange("max", e.target.value)} />
         </label>
         <i className="material-icons color-green" onClick={this.onSubmit.bind(this)}>check</i>
       </form>

@@ -3,7 +3,7 @@ export interface IRange {
 };
 
 export class Range {
-  private range: IRange = { min: 0, max: 100 };
+  private range: IRange = { min: 0, max: 1 };
 
   constructor() {
     const saved = localStorage.getItem('range');

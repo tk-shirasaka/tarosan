@@ -63,7 +63,6 @@ export class ImageComponent extends React.Component<Props, States> {
 
   private getBitmap(width: number, height: number, array: Uint8Array | Uint16Array | Float32Array) {
     const result: number[][] = [];
-    const raito = array instanceof Uint16Array ? 256 : 1;
     const scale = array.length / width / height;
 
     for (let y = 0; y < height; y++) {
@@ -71,7 +70,7 @@ export class ImageComponent extends React.Component<Props, States> {
       for (let x = 0; x < width; x++) {
         let color = 0, i = 0;
         for (; i < Math.min(3, scale); i++) {
-          color += array[i + (y * width + x) * scale] / raito;
+          color += array[i + (y * width + x) * scale];
         }
         line.push(color / i);
       }
